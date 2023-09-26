@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-
+from django.conf import settings 
 from miapp import views
 
 urlpatterns = [
@@ -33,12 +33,22 @@ urlpatterns = [
     path('articulo/', views.articulo, name="articulo"),
     path('editar-articulo/<int:id>', views.editarArticulo, name="editar-articulo"),
     path('articulos/', views.articulos, name="articulos"),
-    path('borrar-articulo/<int:id>', views.borrarArticulo, name="borrar-articulo")
-
-
-
+    path('borrar-articulo/<int:id>', views.borrarArticulo, name="borrar-articulo"),
+    path('save-article/', views.saveArticle, name="save-article"),
+    path('create-article/', views.createArticle, name="create-article"),
+    path("create-full-article/", views.create_full_article , name="create_full_article")
 
 
 
 
 ]
+
+#Configuración para cargar imágenes
+if settings.DEBUG:
+    from django.conf.urls.static import static
+    urlpatterns += static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)
+
+    #Título del panel ADMIN
+admin.site.site_header = "URIEL ADMIN"
+admin.site.site_title = "URIEL - ADMIN"
+admin.site.index_title = "Panel de Gestión"

@@ -6,7 +6,7 @@ from django.db import models
 class Article(models.Model):
     title = models.CharField(max_length=150)
     content= models.TextField()
-    image = models.ImageField(default='null')
+    image = models.ImageField(default='null', upload_to = "articles")
     public = models.BooleanField()
     created_at=models.DateTimeField(auto_now_add=True)
     updated_at= models.DateTimeField(auto_now=True)

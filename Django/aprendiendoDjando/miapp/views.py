@@ -1,5 +1,7 @@
 from django.shortcuts import render, HttpResponse, redirect
 from miapp.models import Article, Category
+from miapp.forms import ForArticle
+from django.contrib import messages
 
 # Create your views here.
 
@@ -109,15 +111,15 @@ def editarArticulo(request, id):
 
 
 def articulos(request):
-    articulos =  Article.objects.all()
+    articulos =  Article.objects.filter(public = True)
 
     
     #articulos = Article.objects.filter(id__lte = 13, title__contains = "2")
 
-    articulos = Article.objects.filter(title__contains = "articulo").exclude(public = False)
+    #articulos = Article.objects.filter(title__contains = "articulo").exclude(public = False)
 
 
-    articulos = Article.objects.raw("SELECT * FROM miapp_article")
+    #articulos = Article.objects.raw("SELECT * FROM miapp_article")
 
 
     return render(request, 'articulos.html', 
@@ -130,3 +132,62 @@ def borrarArticulo(request, id):
     articulo.delete()
 
     return redirect('articulos')
+
+
+def saveArticle(request):
+
+    if request.method == "POST":
+        title  = request.POST['title']
+        content  = request.POST['content']
+        public  = request.POST['public']
+
+        articulo = Article(
+            title = title,
+            content = content,
+            public = public
+        )
+
+        articulo.save()
+        return HttpResponse(f"Articulo creado: {articulo.title} - {articulo.content}")
+
+    else:
+        return HttpResponse("<h2>No se ha podido crear al articulo</h2>")
+
+
+
+def createArticle(request, ):
+
+    return render(request, 'create_article.html')
+
+
+def create_full_article(request):
+
+    if request.method == "POST":
+        formulario = ForArticle(request.POST)
+
+        if formulario.is_valid():
+            data_form = formulario.cleaned_data
+            title = data_form.get('title')
+            content = data_form.get('content')
+            public = data_form.get('public')
+
+            articulo = Article(
+            title = title,
+            content = content,
+            public = public)
+
+            articulo.save()
+
+            #Crear mensaje flask
+            messages.success(request, "Has creado correctamente el artículo")
+            
+
+            return redirect('articulos')
+        else:
+            print(" ")
+
+    else:
+        formulario = ForArticle()
+
+    return render(request,'create_full_article.html', {'form': formulario}
+                  )
